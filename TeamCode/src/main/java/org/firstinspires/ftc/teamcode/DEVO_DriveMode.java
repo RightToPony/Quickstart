@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -19,20 +20,22 @@ public class DEVO_DriveMode extends LinearOpMode {
     private DcMotor motor_frontr;
     private DcMotor motor_backl;
     private DcMotor motor_backr;
-    private Servo intake_servo_l;
-    private Servo intake_servo_r;
+    private DcMotor motor_intake;
+    private DcMotor motor_shooter;
+    private CRServo intake_servo_l;
+    private CRServo intake_servo_r;
 
     @Override
     public void runOpMode() {
 
-        //motor_intake = hardwareMap.get(DcMotor.class, "motor_intake");
+        motor_shooter = hardwareMap.get(DcMotor.class, "motor_shooter");
         motor_frontl = hardwareMap.get(DcMotor.class, "motor_frontl");
         motor_backl = hardwareMap.get(DcMotor.class, "motor_backl");
         motor_frontr = hardwareMap.get(DcMotor.class, "motor_frontr");
         motor_backr = hardwareMap.get(DcMotor.class, "motor_backr");
-        //motor_shooter = hardwareMap.get(DcMotor.class, "motor_shooter");
-        intake_servo_l = hardwareMap.get(Servo.class, "intake_servo_l");
-        intake_servo_r = hardwareMap.get(Servo.class, "intake_servo_r");
+        motor_intake = hardwareMap.get(DcMotor.class, "motor_intake");
+        intake_servo_l = hardwareMap.get(CRServo.class, "intake_servo_l");
+        intake_servo_r = hardwareMap.get(CRServo.class, "intake_servo_r");
         telemetry.addData("Status","Initialized");
         telemetry.update();
 
@@ -43,19 +46,24 @@ public class DEVO_DriveMode extends LinearOpMode {
         while (opModeIsActive()) {
 
             double drive = -gamepad1.left_stick_y;
-            /*
-            double drive;
+
+            double shoot;
 
             if (gamepad1.a) {
-                drive = 1;
+                shoot = .75;
+            } else if (gamepad1.b) {
+                shoot = 0.25;
+            } else if (gamepad1.x) {
+                shoot = 0.50;
+            } else if (gamepad1.y) {
+                shoot = 1 - gamepad1.right_trigger;
             } else {
-                drive = 0;
+                shoot = 0;
             }
-            */
+
             double strafe = gamepad1.left_stick_x;
             double twist = gamepad1.right_stick_x;
             double intake = gamepad1.left_trigger;
-            //double shoot = gamepad1.right_trigger;
 
             double[] speeds = {
                     (-drive + -strafe + -twist),
@@ -71,6 +79,8 @@ public class DEVO_DriveMode extends LinearOpMode {
             telemetry.addData("Front Right", speeds[1]);
             telemetry.addData("Back Left", speeds[2]);
             telemetry.addData("Back Right", speeds[3]);
+
+            telemetry.addData("Shooter Power", shoot);
 
             telemetry.update();
 
@@ -88,11 +98,14 @@ public class DEVO_DriveMode extends LinearOpMode {
             motor_backl.setPower(speeds[2]);
             motor_backr.setPower(speeds[3]);
 
-            //motor_intake.setPower(intake);
+            motor_shooter.setPower(shoot);
 
-            //intake_servo_l.setpower(intake);
-            //intake_servo_r.setpower(-intake);
+            motor_intake.setPower(intake);
+
+            intake_servo_l.setPower(-intake);
+            intake_servo_r.setPower(intake);
 
         }
     }
 }
+
