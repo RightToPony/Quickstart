@@ -8,9 +8,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-// JFYI if this code causes any problems for varsity feel free to delete it
-// as everything is backed up elsewhere. -Chris
-
 
 @TeleOp(name = "DEVO_DriveMode")
 public class DEVO_DriveMode extends LinearOpMode {

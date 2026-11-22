@@ -18,21 +18,25 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 
-@Autonomous(name = "AutoPath", group = "Autonomous")
-public class PathingTest extends LinearOpMode {
+@Autonomous(name = "DEVO_AUTO", group = "Autonomous")
+public class DEVO_AUTO extends LinearOpMode {
 
     private Follower follower;
 
     private final PoseFactory poseFactory = PoseFactory.degrees();
 
-    private final Pose start = poseFactory.of(82.9411, 28.7858, 90);
-    private final Pose point1 = poseFactory.of(83.0687, 109.6251, -90);
-    private final Pose point1Control1 = poseFactory.of(139.8175, 71.5071, 0);
+    private final Pose start = poseFactory.of(80.5795, 108.0561, 90);
+    private final Pose point1 = poseFactory.of(133.5066, 133.5818, 0);
+    private final Pose point1Control1 = poseFactory.of(91.6835, 133.9039, 0);
+    private final Pose point2Start = poseFactory.of(133.5066, 133.5818, 0);
+    private final Pose point2 = poseFactory.of(81.3734, 35.3572, 90);
+    private final Pose point2Control1 = poseFactory.of(131.0867, 36.2639, 0);
 
     // Autonomous routine
     public Command autoRoutine() {
         return sequential(
-                follow(follower, path1())
+                follow(follower, path1()),
+                follow(follower, path2())
         );
     }
 
@@ -65,5 +69,9 @@ public class PathingTest extends LinearOpMode {
 
     public Path path1() {
         return Paths.curve(start, point1Control1, point1).linear(start, point1);
+    }
+
+    public Path path2() {
+        return Paths.curve(point2Start, point2Control1, point2).linear(point2Start, point2);
     }
 }
