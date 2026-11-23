@@ -15,12 +15,13 @@ import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 
 @Autonomous(name = "DEVO_AUTO", group = "Autonomous")
 public class DEVO_AUTO extends LinearOpMode {
-
+    private DcMotor motor_intake;
     private Follower follower;
 
     private final PoseFactory poseFactory = PoseFactory.degrees();
@@ -42,6 +43,8 @@ public class DEVO_AUTO extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+        motor_intake = hardwareMap.get(DcMotor.class, "motor_intake");
+
         Scheduler.reset();
         follower = Constants.create(hardwareMap);
         follower.setPose(start);
@@ -53,6 +56,8 @@ public class DEVO_AUTO extends LinearOpMode {
         while (opModeIsActive()) {
             follower.update();
             Scheduler.execute();
+
+            motor_intake.setPower(1);
 
             telemetry.addData("x", follower.pose().x());
             telemetry.addData("y", follower.pose().y());

@@ -27,6 +27,9 @@ public class Pedro_DriveMode extends OpMode {
         follower = Constants.create(hardwareMap);
     }
 
+    int lastPosition = motor_shooter.getCurrentPosition();
+    long lastTime = System.nanoTime();
+
     @Override
     public void loop() {
         motor_shooter = hardwareMap.get(DcMotor.class, "motor_shooter");
@@ -65,9 +68,57 @@ public class Pedro_DriveMode extends OpMode {
             shoot = 0;
         }
 
+        int currentPosition = motor_shooter.getCurrentPosition();
+
+        double ticksPerRevolution = 28.0;
+        double maxRPM = 6000.0;
+
+        // Measure elapsed time
+        long currentTime = System.nanoTime();
+        double elapsedTime =
+                (currentTime - lastTime) / 1_000_000_000.0;
+
+        if (elapsedTime > 0) {
+
+            // Calculate encoder ticks per second
+            double ticksPerSecond =
+                    (currentPosition - lastPosition) / elapsedTime;
+
+            // Convert to RPM
+            double rpm = (ticksPerSecond / ticksPerRevolution) * 60.0;
+
+            // Convert RPM to normalized speed (-1 to 1)
+            double speed = rpm / maxRPM;
+
+            speed = Math.round(speed * 10.0) / 10.0;
+
+            // Keep value within range
+            speed = Math.max(-1.0, Math.min(1.0, speed));
+
+            // Display results
+            telemetry.addData("Encoder Position", currentPosition);
+            telemetry.addData("RPM", "%.1f", rpm);
+            telemetry.addData("Shooter Speed", "%.3f", speed);
+
+            telemetry.addLine();
+
+            if (Math.abs(speed - shoot) <= 0.1 && shoot > 0) {
+                telemetry.addLine("READY TO FIRE");
+            } else {
+                telemetry.addLine("DO NOT FIRE");
+            }
+
+            telemetry.update();
+        }
+
+        // Save readings for next loop
+        lastPosition = currentPosition;
+        lastTime = currentTime;
+
         double intake = gamepad1.left_trigger;
 
-
+        telemetry.addLine();
+        
         telemetry.addData("Shooter Power", shoot);
 
         telemetry.update();
